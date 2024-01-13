@@ -1,43 +1,52 @@
-import numpy as np
+def calculate_die_coordinates(wafer_diameter, die_size, die_shift_vector, reference_die):
+    die_width, die_height = die_size
+    ref_die_x, ref_die_y = reference_die
+    die_shift_x, die_shift_y = die_shift_vector
+
+    # Calculate the number of dies in each direction
+    num_dies_x = int(wafer_diameter / die_width)
+    num_dies_y = int(wafer_diameter / die_height)
+
+    die_coordinates = []
+    llc_coordinates = []
+
+    for i in range(-num_dies_x // 2, num_dies_x // 2 + 1):
+        for j in range(-num_dies_y // 2, num_dies_y // 2 + 1):
+            die_x = ref_die_x + i + die_shift_x
+            die_y = ref_die_y + j + die_shift_y
+
+            die_coordinates.append((i + 1, j + 1))
+            llc_coordinates.append((die_x * die_width, die_y * die_height))
+
+    return die_coordinates, llc_coordinates
 
 
-def calculate_die__and_llc(wafer_diameter, die_size, die_shift_vector, distance_from_cow):
-    num_dies_x = int(wafer_diameter / (die_size[0] + die_shift_vector[0])) + 1
-    num_dies_y = int(wafer_diameter / (die_size[1] + die_shift_vector[1])) + 1
+def read_input(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
 
-    die_index = []
-    die_llc = []
+    wafer_diameter = int(lines[0].split(":")[1].strip())
+    die_size = tuple(map(int, lines[1].split(":")[1].strip().split("x")))
+    die_shift_vector = tuple(map(int, lines[2].split(":")[1].strip()[1:-1].split(",")))
+    reference_die = tuple(map(int, lines[3].split(":")[1].strip()[1:-1].split(",")))
 
-    for i in range(num_dies_x):
-        for j in range(num_dies_y):
-            die_shift_x = i * die_shift_vector[0]
-            die_shift_y = j * die_shift_vector[1]
-
-            die_index.append((i, j))
-            die_llc.append((distance_from_cow[0] + die_shift_x, distance_from_cow[1] + die_shift_y))
-
-    return die_index, die_llc
+    return wafer_diameter, die_size, die_shift_vector, reference_die
 
 
-with open('Input/Testcase2.txt', 'r') as f:
-    d1 = [line.strip() for line in f]
-    d = []
-    for i in d1:
-        s = i.split(':')
-        d.append(s)
-    wd = int(d[0][1])
-    ds = np.array([int(x) for x in d[1][1].split('x')])
-    dsv = np.array([int(x) for x in d[2][1].strip('()').split(',')])
-    dfc = np.array([int(x) for x in d[3][1].strip('()').split(',')])
+def write_output(file_path, die_coordinates, llc_coordinates):
+    with open(file_path, 'w') as file:
+        for die, llc in zip(die_coordinates, llc_coordinates):
+            file.write(f"({die[0]},{die[1]}):({llc[0]},{llc[1]})\n")
 
-    die_index, die_llc = calculate_die__and_llc(wd, ds, dsv, dfc)
 
-    print("Die Index: ", die_index)
-    print("LLC of all valid dies: ", die_llc)
+if __name__ == "__main__":
+    input_file_path = "Testcase2.txt"
+    output_file_path = "output.txt"
 
-    output_str = ''
-    for i, llc in zip(die_index, die_llc):
-        output_str += f'({i[0]},{i[1]}):({llc[0]:.1f},{llc[1]:.2f})' + '\n'
-    with open('out.txt', 'w') as w:
-        output_str = output_str.strip()
-        w.write(output_str)
+    wafer_diameter, die_size, die_shift_vector, reference_die = read_input(input_file_path)
+
+    die_coordinates, llc_coordinates = calculate_die_coordinates(
+        wafer_diameter, die_size, die_shift_vector, reference_die
+    )
+
+    write_output(output_file_path, die_coordinates, llc_coordinates)
