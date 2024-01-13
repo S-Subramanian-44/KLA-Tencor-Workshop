@@ -33,7 +33,7 @@ def write_output(file_path, points):
 
 
 # Example usage
-input_file_path = 'Testcase1.txt'
+input_file_path = 'Input\Testcase1.txt'
 output_file_path = 'output.txt'
 
 wafer_diameter, num_points, given_angle = read_input(input_file_path)
