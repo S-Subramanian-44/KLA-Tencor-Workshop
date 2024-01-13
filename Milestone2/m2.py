@@ -40,7 +40,7 @@ def write_output(file_path, die_coordinates, llc_coordinates):
 
 
 if __name__ == "__main__":
-    input_file_path = "Testcase2.txt"
+    input_file_path = "Input\Testcase2.txt"
     output_file_path = "output.txt"
 
     wafer_diameter, die_size, die_shift_vector, reference_die = read_input(input_file_path)
